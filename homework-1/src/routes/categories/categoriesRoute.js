@@ -1,52 +1,24 @@
 const fs = require('fs');
-const util = require('util');
 const path = require('path');
-const getId = url => {
-  const lastIndex = url.lastIndexOf('/');
+const util = require('util');
 
-  if (lastIndex !== -1) {
-    return url.slice(lastIndex +1);
-  }
-};
-const productsFolder = path.resolve(__dirname, '../../../', 'data/products');
+const categoriesFolder = path.resolve(__dirname, '../../../', 'data/categories');
 const writeFile = util.promisify(fs.writeFile);
-const saveNewProduct = (fileName, data) => {
-  const src = path.resolve(productsFolder, fileName + '.json');
+
+const saveNewCategory = (fileName, data) => {
+  const src = path.resolve(categoriesFolder, fileName + '.json');
   const dataStr = JSON.stringify(data);
   return writeFile(src, dataStr);
 };
-const productRoute = (request, response) => {
-  if (request.method === 'GET') {
-    fs.readFile('src/routes/products/all-products.json', 'utf8', function(err, data) {
-      if (err) {
-        console.log(err)
-      } else {
-        response.writeHead(200, {
-          'Content-Type': 'application/json',
-        });
-        data = JSON.parse(data);
-        if (getId(request.url) === 'products') {
-          response.write(JSON.stringify(data));
-        } else {
-          let item = data.find(el=>el.id==getId(request.url))
-          if (item === undefined) {
-            response.write(JSON.stringify([]))
-          } else {
-            response.write(JSON.stringify(item))
-          }
-        }       
-        response.end()
-      }
-    })
-  }
+
+const categoryRoute = (request, response) => {
   if (request.method === 'POST') {
     let data = '';
     let error = {
       "error" : ''
     };
-
-    //массив с обязательными полями для продукта
-    let validateRow = ["name", "description", "price", "currency", "categories"];
+    //массив с обязательными полями для пользователя
+    let validateRow = ["name", "description"];
     response.writeHead(200, {"Content-Type": "application/json"});
     
     request.on('data', function(chunk) {
@@ -66,24 +38,23 @@ const productRoute = (request, response) => {
           error.error += `'${el}' is missing `;
         }
       }
-
       if (error.error !== '') {
         response.write(JSON.stringify(error));
         response.end();
       } else {
         data.map(el=>el.id=Date.now());
-        saveNewProduct(data[0].id, data);
+        saveNewCategory(data[0].name, data);
         let responseData = [
           {
             "status":"success",
-            "product": data[0]
+            "category": data[0]
           }
         ]
         response.write(JSON.stringify(responseData));
         response.end();
-      }
+      }  
     });
   }
-};
+}
 
-module.exports = productRoute;
+module.exports = categoryRoute;
