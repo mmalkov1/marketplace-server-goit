@@ -1,26 +1,20 @@
-const http = require('http');
-const url = require('url');
 const morgan = require('morgan');
+const express = require('express');
+const bodyParser = require('body-parser');
 const router = require('./routes/router');
-const getRouteHandler = require('./helpers/get-route-handler');
+const app = express();
 
-const logger = morgan('combined');
 
 const startServer = port => {
+  app
+    .use(bodyParser.urlencoded({extended: false}))
+    .use(bodyParser.json())
+    .use(morgan('dev'))
+    .use('/', router)
 
-  const server = http.createServer((request, response) => {
-    // Get route from the request
-    const parsedUrl = url.parse(request.url);
+  app.listen(port);
 
-    // parsedUrl = 'category'
-
-    // Get router function
-    const func = getRouteHandler(router, parsedUrl.pathname) || router.default;
-
-    logger(request, response, () => func(request, response));
-  });
-
-  server.listen(port);
+  console.log('Server is started ...');
 };
 
 module.exports = startServer;

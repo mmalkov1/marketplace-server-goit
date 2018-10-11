@@ -1,0 +1,15 @@
+[
+  { "id": 123444, "name": "car", "description": "Категория для авто" },
+  { "id": 12344444, "name": "house", "description": "Категория для домов" },
+  {
+    "id": 454353466,
+    "name": "computer",
+    "description": "Категория для компьютеров"
+  },
+  { "id": 453666, "name": "mobile", "description": "Категория для мобилок!" },
+  {
+    "name": "prize",
+    "description": "Категория для подарков",
+    "id": 1539284221618
+  }
+]
